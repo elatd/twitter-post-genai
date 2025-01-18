@@ -7,9 +7,9 @@ import { BsArrowRight, BsCopy } from "react-icons/bs";
 import { GrPowerCycle } from "react-icons/gr";
 
 const BASE_URL: string =
-  process.env.NODE_ENV == "development"
-    ? "http://localhost:3000"
-    : process.env.BASE_URL!;
+  process.env.NODE_ENV == "production"
+    ? process.env.NEXT_PUBLIC_BASE_URL!
+    : "http://localhost:3000";
 
 const InteractiveForm = () => {
   const [description, setDescription] = useState<string>("");
@@ -18,13 +18,16 @@ const InteractiveForm = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
+    console.log(BASE_URL);
+    console.log(process.env.NODE_ENV, process.env.NEXT_PUBLIC_BASE_URL);
+
     setMounted(true);
   }, []);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-    console.log(description);
+
     fetchTweetIdeas();
   };
 
@@ -32,9 +35,10 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        JSON.stringify({ description })
+        JSON.stringify({ description }),
+        { withCredentials: true }
       );
-
+      console.log(BASE_URL + "/api/submit");
       if (response.status !== 200) {
         throw new Error("Failed to fetch tweet ideas");
       }
