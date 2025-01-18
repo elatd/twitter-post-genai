@@ -1,6 +1,6 @@
 "use client";
 
-import axios from "axios";
+import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import { BsArrowRight, BsCopy } from "react-icons/bs";
@@ -18,9 +18,6 @@ const InteractiveForm = () => {
   const [mounted, setMounted] = useState(false);
 
   useEffect(() => {
-    console.log(BASE_URL);
-    console.log(process.env.NODE_ENV, process.env.NEXT_PUBLIC_BASE_URL);
-
     setMounted(true);
   }, []);
 
@@ -56,10 +53,16 @@ const InteractiveForm = () => {
       });
       setTweetIdeas(tweets);
       setLoading(false);
-    } catch (error) {
+    } catch (error: unknown) {
       setLoading(false);
+
       console.error("Error fetching tweet ideas:", error);
-      toast.error("Failed to generate tweet ideas. Please try again.");
+
+      if (isAxiosError(error)) {
+        if (error.response?.status == 429) {
+          toast.error("Rate limit exceeded. Please try again later.");
+        } else toast.error("Failed to generate tweet ideas. Please try again.");
+      }
     }
   };
 

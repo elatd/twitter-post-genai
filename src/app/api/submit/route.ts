@@ -3,8 +3,8 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 // Rate limit configuration
-const RATE_LIMIT = 2; // Max requests per minute
-const RATE_LIMIT_WINDOW = 60; // 60 seconds window
+const RATE_LIMIT = 25; // maximum number of requests in window
+const RATE_LIMIT_WINDOW = 60; // time in seconds
 
 const API_KEY: string = process.env.GEMINI_AI_API_KEY || "";
 
@@ -18,7 +18,7 @@ export async function POST(req: Request) {
     );
   }
 
-  // Get the client's IP address (you can use a more reliable method to detect the IP in production)
+  // get the client's IP address:
   const ip = req.headers.get("x-forwarded-for");
 
   if (!ip) {
@@ -28,26 +28,24 @@ export async function POST(req: Request) {
     );
   }
 
-  // Define the Redis key for rate limiting based on the IP address
+  // define the Redis key:
   const rateLimitKey = `rate_limit:${ip}`;
 
   try {
-    // Check the current count of requests for this IP address
+    // check the current count of requests for this IP address(initially null):
     const currentCount = await redis.get(rateLimitKey);
 
-    console.log(currentCount);
-
     if (currentCount && parseInt(currentCount) >= RATE_LIMIT) {
-      // If the limit is exceeded, return a 429 error
+      // if the limit is exceeded, return a 429 error:
       return NextResponse.json(
         { message: "Rate limit exceeded. Please try again later." },
         { status: 429 }
       );
     }
 
-    // Increment the request count for this IP
+    // increment the request count for this IP:
     const newCount = await redis.incr(rateLimitKey);
-    console.log(newCount);
+
     // Set the expiration time for the rate limit key (1 minute TTL)
     if (newCount === 1) {
       await redis.expire(rateLimitKey, RATE_LIMIT_WINDOW); // Set TTL for 60 seconds
