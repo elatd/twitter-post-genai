@@ -33,7 +33,7 @@ const InteractiveForm = () => {
   const fetchTweetIdeas = async () => {
     try {
       const response = await axios.post(
-        BASE_URL + "/api/submit",
+        BASE_URL + "api/submit",
         JSON.stringify({ description }),
         { withCredentials: true }
       );

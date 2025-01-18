@@ -3,7 +3,7 @@ import { GoogleGenerativeAI } from "@google/generative-ai";
 import { NextResponse } from "next/server";
 
 // Rate limit configuration
-const RATE_LIMIT = 20; // Max requests per minute
+const RATE_LIMIT = 2; // Max requests per minute
 const RATE_LIMIT_WINDOW = 60; // 60 seconds window
 
 const API_KEY: string = process.env.GEMINI_AI_API_KEY || "";
