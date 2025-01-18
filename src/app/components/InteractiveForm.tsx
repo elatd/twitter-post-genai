@@ -27,7 +27,6 @@ const InteractiveForm = () => {
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
     setLoading(true);
-
     fetchTweetIdeas();
   };
 
@@ -38,7 +37,7 @@ const InteractiveForm = () => {
         JSON.stringify({ description }),
         { withCredentials: true }
       );
-      console.log(BASE_URL + "/api/submit");
+
       if (response.status !== 200) {
         throw new Error("Failed to fetch tweet ideas");
       }
