@@ -1,36 +1,82 @@
-This is a [Next.js](https://nextjs.org) project bootstrapped with [`create-next-app`](https://nextjs.org/docs/app/api-reference/cli/create-next-app).
+# AI-Powered Tweet Generator
 
-## Getting Started
+An AI-driven tool that generates creative and engaging tweet ideas based on user-provided descriptions. This app leverages Google's generative AI model to quickly craft impactful tweets for various themes and tones. With a focus on speed and ease of use, it helps users create viral content effortlessly for social media platforms.
 
-First, run the development server:
+## Features
 
-```bash
-npm run dev
-# or
-yarn dev
-# or
-pnpm dev
-# or
-bun dev
+- 📝 Generate engaging tweets instantly.
+- 🤖 Powered by advanced generative AI.
+- ⏱️ Fast tweet suggestions in seconds.
+- 🎨 Customizable tweet tone options.
+- 🔒 Secure and private user data.
+- 🚀 Built-in rate limiting for fair use.
+- 🛠️ Easy integration via REST API.
+
+## Tech Stack
+
+**Client:** NextJS, Typescript, TailwindCSS
+
+**Server:** NextJS, Typecript, Redis, Gemini
+
+## API Reference
+
+#### Generate tweet
+
+```http
+  POST /api/submit
 ```
 
-Open [http://localhost:3000](http://localhost:3000) with your browser to see the result.
+| Parameter     | Type     | Description                              |
+| :------------ | :------- | :--------------------------------------- |
+| `description` | `string` | Specify your requirements for the tweet. |
 
-You can start editing the page by modifying `app/page.tsx`. The page auto-updates as you edit the file.
+## Run Locally
 
-This project uses [`next/font`](https://nextjs.org/docs/app/building-your-application/optimizing/fonts) to automatically optimize and load [Geist](https://vercel.com/font), a new font family for Vercel.
+1. Clone the project
 
-## Learn More
+```bash
+  git clone https://github.com/Heismanish/twitter-post-genai
+```
 
-To learn more about Next.js, take a look at the following resources:
+2. Go to the project directory
 
-- [Next.js Documentation](https://nextjs.org/docs) - learn about Next.js features and API.
-- [Learn Next.js](https://nextjs.org/learn) - an interactive Next.js tutorial.
+```bash
+  cd twitter-post-genai
+```
 
-You can check out [the Next.js GitHub repository](https://github.com/vercel/next.js) - your feedback and contributions are welcome!
+3. Install dependencies
 
-## Deploy on Vercel
+```bash
+  npm install
+```
 
-The easiest way to deploy your Next.js app is to use the [Vercel Platform](https://vercel.com/new?utm_medium=default-template&filter=next.js&utm_source=create-next-app&utm_campaign=create-next-app-readme) from the creators of Next.js.
+4. Start the server
 
-Check out our [Next.js deployment documentation](https://nextjs.org/docs/app/building-your-application/deploying) for more details.
+```bash
+  npm run dev
+```
+
+## Environment Variables
+
+To run this project, you will need to add the following environment variables to your .env file
+
+```shell
+GEMINI_AI_API_KEY = "Your gemini api key"
+REDIS_PORT =
+REDIS_HOST =
+REDIS_PASSWORD =
+NEXT_PUBLIC_BASE_URL = "Enter base url of you deployment"
+```
+
+## Screenshots
+
+![App Home](/public/App_home.png)
+![App Working](/public/App_working.png)
+
+## Authors
+
+- [@Heismanish](https://www.github.com/Heismanish)
+
+## Contributing
+
+Contributions are always welcome!
