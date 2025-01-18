@@ -8,7 +8,7 @@ import { GrPowerCycle } from "react-icons/gr";
 
 const BASE_URL: string =
   process.env.NODE_ENV == "production"
-    ? "https://twitter-post-genai.vercel.app/"
+    ? "https://twitter-post-genai.vercel.app"
     : "http://localhost:3000";
 
 const InteractiveForm = () => {
@@ -33,7 +33,7 @@ const InteractiveForm = () => {
   const fetchTweetIdeas = async () => {
     try {
       const response = await axios.post(
-        BASE_URL + "api/submit",
+        BASE_URL + "/api/submit",
         JSON.stringify({ description }),
         { withCredentials: true }
       );
