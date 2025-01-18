@@ -8,7 +8,7 @@ import { GrPowerCycle } from "react-icons/gr";
 
 const BASE_URL: string =
   process.env.NODE_ENV == "production"
-    ? process.env.NEXT_PUBLIC_BASE_URL!
+    ? "https://twitter-post-genai.vercel.app/"
     : "http://localhost:3000";
 
 const InteractiveForm = () => {
