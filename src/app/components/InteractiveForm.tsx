@@ -6,6 +6,11 @@ import toast, { Toaster } from "react-hot-toast";
 import { BsArrowRight, BsCopy } from "react-icons/bs";
 import { GrPowerCycle } from "react-icons/gr";
 
+const BASE_URL: string =
+  process.env.NODE_ENV == "development"
+    ? "http://localhost:3000"
+    : process.env.BASE_URL!;
+
 const InteractiveForm = () => {
   const [description, setDescription] = useState<string>("");
   const [tweetIdeas, setTweetIdeas] = useState<string | null>(null);
@@ -26,7 +31,7 @@ const InteractiveForm = () => {
   const fetchTweetIdeas = async () => {
     try {
       const response = await axios.post(
-        "http://localhost:3000/api/submit",
+        BASE_URL + "/api/submit",
         JSON.stringify({ description })
       );
 
