@@ -4,7 +4,6 @@ import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import {  BsCopy } from "react-icons/bs";
-import { GrPowerCycle } from "react-icons/gr";
 import { Button } from "./Button";
 import PromptForm from "./PromptForm";
 import Dropdown from "./Dropdown";
