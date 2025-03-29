@@ -3,8 +3,12 @@
 import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
-import { BsArrowRight, BsCopy } from "react-icons/bs";
+import {  BsCopy } from "react-icons/bs";
 import { GrPowerCycle } from "react-icons/gr";
+import { Button } from "./Button";
+import PromptForm from "./PromptForm";
+import Dropdown from "./Dropdown";
+import tweetCategories, { TweetCategory } from "../lib/data";
 
 const BASE_URL: string =
   process.env.NODE_ENV == "production"
@@ -13,9 +17,11 @@ const BASE_URL: string =
 
 const InteractiveForm = () => {
   const [description, setDescription] = useState<string>("");
-  const [tweetIdeas, setTweetIdeas] = useState<string | null>(null);
+  const [tweetIdeas, setTweetIdeas] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string,string>>(
+    tweetCategories.reduce((acc, category) => ({...acc, [category.key]: ''}), {}));
 
   useEffect(() => {
     setMounted(true);
@@ -31,7 +37,7 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        JSON.stringify({ description }),
+        JSON.stringify({ description,selectedOptions }),
         { withCredentials: true }
       );
 
@@ -40,6 +46,7 @@ const InteractiveForm = () => {
       }
 
       const data = await response.data;
+      console.log(data);
 
       const tweets = data.tweet;
 
@@ -52,10 +59,7 @@ const InteractiveForm = () => {
         },
       });
       setTweetIdeas(tweets);
-      setLoading(false);
     } catch (error: unknown) {
-      setLoading(false);
-
       console.error("Error fetching tweet ideas:", error);
 
       if (isAxiosError(error)) {
@@ -63,34 +67,32 @@ const InteractiveForm = () => {
           toast.error("Rate limit exceeded. Please try again later.");
         } else toast.error("Failed to generate tweet ideas. Please try again.");
       }
+    } finally {
+      setLoading(false);
+      setDescription("");
+      setSelectedOptions(tweetCategories.reduce((acc, category) => ({...acc, [category.key]: ''}), {}));
     }
   };
 
   if (!mounted) return null;
 
   return (
-    <div className="w-full  max-w-2xl bg-inherit relative">
-      <form
-        onSubmit={handleSubmit}
-        className="w-full flex flex-col justify-center items-center relative"
-      >
-        <textarea
-          name="description"
-          id="description"
-          rows={8}
-          placeholder="Write your thoughts here..."
-          value={description}
-          onChange={(e) => setDescription(e.target.value)}
-          className="w-full block bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800 placeholder:text-gray-500 caret-gray-300 transition-colors duration-500 ease-in mb-4"
-        />
-        <button
-          type="submit"
-          className="absolute bottom-6 right-2 flex items-center bg-transparent rounded-full p-2 text-gray-200 font-medium border-2 border-gray-200 hover:bg-gray-900 hover:text-gray-100 transition-all duration-300 ease-in-out hover:scale-105"
-          disabled={loading}
-        >
-          <BsArrowRight size={20} className="" />
-        </button>
-      </form>
+    <div className="w-full max-w-2xl bg-inherit relative px-2">
+      <PromptForm handleSubmit={handleSubmit} description={description} loading={loading} setDescription={setDescription}/>
+
+      <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 mb-6">
+        {tweetCategories.map((category : TweetCategory) => (
+          <Dropdown
+          key={category.key}
+          label={category.name}
+          options={category.options}
+          selectedOption={selectedOptions[category.key]}
+          setSelectedOption={(value) =>
+            setSelectedOptions((prev) => ({ ...prev, [category.key]: value }))
+          }
+          />
+        ))}
+      </div>
 
       {loading && (
         <div className="absolute -bottom-8 left-0 right-0 bg-gray-950 bg-opacity-50 flex items-center justify-center z-50">
@@ -98,17 +100,28 @@ const InteractiveForm = () => {
         </div>
       )}
 
-      {tweetIdeas && (
+      {/* { tweetIdeas.length > 0  && 
+        <Button onClick={()=>  toast.promise(fetchTweetIdeas(), {
+            loading: "Regenerating...",
+            success: <b> Regenerated successfully!</b>,
+            error: <b> Could not regenerate.</b>
+          })} className="border border-white rounded-md p-2 flex gap-2 items-center text-sm font-medium hover:bg-white hover:text-black duration-500 transition-all ease-in">
+          Regenrate <GrPowerCycle size={15} />
+        </Button>
+      } */}
+
+      {tweetIdeas.length > 0 && tweetIdeas.map((tweet,idx) => (
+        <div key={idx} >
         <div className="relative border-2 border-gray-900 bg-transparent mt-2 p-2 rounded-lg  h-auto overflow-y-auto">
           <div className="w-full p-2 pr-24 max-w-2xl bg-inherit">
             <div className="w-full flex flex-col justify-center items-center text-wrap text-base text-gray-100">
-              {tweetIdeas}
+              {tweet}
             </div>
           </div>
 
-          <button
+          <Button
             onClick={() => {
-              navigator.clipboard.writeText(tweetIdeas);
+              navigator.clipboard.writeText(tweet);
               toast("Copied to clipboard", {
                 icon: "📋",
                 style: {
@@ -119,24 +132,13 @@ const InteractiveForm = () => {
               });
             }}
             className="text-[12px] flex items-center gap-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 absolute right-1 top-1"
-          >
+            >
             <BsCopy size={15} /> Copy
-          </button>
-          <button
-            onClick={() => {
-              toast.promise(fetchTweetIdeas(), {
-                loading: "Regenerating...",
-                success: <b> Regenerated successfully!</b>,
-                error: <b> Could not regenerate.</b>,
-              });
-            }}
-            className="text-[12px] flex items-center gap-1 bg-green-500 text-gray-100 px-2 py-2 rounded-full hover:bg-green-600 absolute right-4 bottom-1"
-          >
-            <GrPowerCycle size={15} />
-          </button>
+          </Button>
           <Toaster position="top-center" reverseOrder={false} />
         </div>
-      )}
+      </div>
+      )) }
     </div>
   );
 };

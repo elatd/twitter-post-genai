@@ -5,7 +5,7 @@ export default function Home() {
   return (
     <div className="flex flex-col items-center  justify-center min-h-screen container mx-auto ">
       <RiTwitterXLine size={50} color="white" className="mb-4" />
-      <div className=" w-full flex flex-col items-center  justify-center ">
+      <div className=" w-full flex flex-col items-center  justify-center sm:mx-0">
         <h3 className="text-2xl font-bold text-gray-100 flex items-center text-center">
           Effortless Tweet Inspiration{" "}
           <RiStarFill size={20} className="inline ml-2" />
@@ -14,7 +14,7 @@ export default function Home() {
           Discover creative and impactful ideas tailored to your needs.
         </p>
 
-        <InteractiveForm></InteractiveForm>
+        <InteractiveForm />
       </div>
     </div>
   );
