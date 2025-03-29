@@ -88,7 +88,7 @@ const InteractiveForm = () => {
           options={category.options}
           selectedOption={selectedOptions[category.key]}
           setSelectedOption={(value) =>
-            setSelectedOptions((prev) => ({ ...prev, [category.key]: value }))
+            setSelectedOptions((prev) => ({ ...prev, [category.key]: value || '' }))
           }
           />
         ))}
