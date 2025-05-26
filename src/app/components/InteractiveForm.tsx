@@ -4,6 +4,7 @@ import axios, { isAxiosError } from "axios";
 import { useEffect, useState } from "react";
 import toast, { Toaster } from "react-hot-toast";
 import {  BsCopy } from "react-icons/bs";
+import { RiFileAddLine } from "react-icons/ri";
 import { Button } from "./Button";
 import PromptForm from "./PromptForm";
 import Dropdown from "./Dropdown";
@@ -20,7 +21,29 @@ const InteractiveForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [mounted, setMounted] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string,string>>(
-    tweetCategories.reduce((acc, category) => ({...acc, [category.key]: ''}), {}));
+    tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {})
+  );
+
+  const exportTweet = async (tweet: string) => {
+    try {
+      await axios.post(
+        BASE_URL + "/api/google-sheets",
+        JSON.stringify({ tweet }),
+        { headers: { "Content-Type": "application/json" } }
+      );
+      toast("Saved to Google Sheets", {
+        icon: "✅",
+        style: {
+          borderRadius: "10px",
+          background: "#333",
+          color: "#fff",
+        },
+      });
+    } catch (error) {
+      console.error("Error exporting tweet:", error);
+      toast.error("Failed to save tweet to Google Sheets");
+    }
+  };
 
   useEffect(() => {
     setMounted(true);
@@ -133,6 +156,12 @@ const InteractiveForm = () => {
             className="text-[12px] flex items-center gap-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 absolute right-1 top-1"
             >
             <BsCopy size={15} /> Copy
+          </Button>
+          <Button
+            onClick={() => exportTweet(tweet)}
+            className="text-[12px] flex items-center gap-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 absolute right-1 bottom-1"
+          >
+            <RiFileAddLine size={15} /> Save
           </Button>
           <Toaster position="top-center" reverseOrder={false} />
         </div>

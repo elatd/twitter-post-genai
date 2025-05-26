@@ -66,6 +66,7 @@ REDIS_PORT =
 REDIS_HOST =
 REDIS_PASSWORD =
 NEXT_PUBLIC_BASE_URL = "Enter base url of you deployment"
+GOOGLE_SHEETS_WEBHOOK_URL = "Webhook URL for saving tweets to Google Sheets"
 ```
 
 ## Screenshots
