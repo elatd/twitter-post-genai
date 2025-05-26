@@ -203,7 +203,7 @@ const InteractiveForm = () => {
             onClick={() => exportTweet(tweet)}
             className="text-[12px] flex items-center gap-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 absolute right-1 bottom-1"
           >
-            <RiFileAddLine size={15} /> Save
+            <RiFileAddLine size={15} /> Send to Sheets
           </Button>
           <Toaster position="top-center" reverseOrder={false} />
         </div>
