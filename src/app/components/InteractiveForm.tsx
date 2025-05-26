@@ -27,10 +27,13 @@ const InteractiveForm = () => {
   );
 
   const exportTweet = async (tweet: string) => {
+    const loadingToast = toast.loading("Saving tweet...");
     try {
+      let response;
+      
       if (webhookUrl) {
         // Direct webhook request
-        await fetch(webhookUrl, {
+        response = await fetch(webhookUrl, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -39,7 +42,7 @@ const InteractiveForm = () => {
         });
       } else {
         // Local API route request
-        await fetch(`${BASE_URL}/api/google-sheets`, {
+        response = await fetch(`${BASE_URL}/api/google-sheets`, {
           method: "POST",
           headers: {
             "Content-Type": "application/json",
@@ -47,9 +50,13 @@ const InteractiveForm = () => {
           body: JSON.stringify({ tweet }),
         });
       }
+
+      if (!response.ok) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
       
-      toast("Saved to Google Sheets", {
-        icon: "✅",
+      toast.dismiss(loadingToast);
+      toast.success("Saved to Google Sheets", {
         style: {
           borderRadius: "10px",
           background: "#333",
@@ -57,8 +64,14 @@ const InteractiveForm = () => {
         },
       });
     } catch (error) {
+      toast.dismiss(loadingToast);
       console.error("Error exporting tweet:", error);
-      toast.error("Failed to save tweet to Google Sheets");
+      
+      if (error instanceof Error) {
+        toast.error(`Failed to save tweet: ${error.message}`);
+      } else {
+        toast.error("Failed to save tweet to Google Sheets");
+      }
     }
   };
 
