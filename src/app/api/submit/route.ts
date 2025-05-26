@@ -9,10 +9,18 @@ import { NextResponse } from "next/server";
 const API_KEY: string = process.env.OPENAI_API_KEY || "";
 interface ResponseType {
   description :string,
-  options: Record<string,string>
+  options: Record<string,string>,
+  apiKey: string
 }
 export async function POST(req: Request) {
-  const { description ,options={} } :ResponseType = await req.json();
+  const { description, options={}, apiKey } :ResponseType = await req.json();
+
+  if (!apiKey) {
+    return NextResponse.json(
+      { message: "API key is required" },
+      { status: 400 }
+    );
+  }
 
   if (!description && !Object.values(options).some(value => value.trim() !== "")) {
     return NextResponse.json(
@@ -54,7 +62,7 @@ export async function POST(req: Request) {
     //   await redis.expire(rateLimitKey, RATE_LIMIT_WINDOW); // Set TTL for 60 seconds
     // }
 
-    const openai = new OpenAI({ apiKey: API_KEY });
+    const openai = new OpenAI({ apiKey });
     let prompt = `Generate 3 engaging twitter tweet (of length at least 16 words), make sure to separate each tweet with "###".`;
     
     if(description) {

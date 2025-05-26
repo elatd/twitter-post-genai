@@ -19,6 +19,7 @@ const InteractiveForm = () => {
   const [description, setDescription] = useState<string>("");
   const [tweetIdeas, setTweetIdeas] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
+  const [apiKey, setApiKey] = useState<string>("");
   const [mounted, setMounted] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string,string>>(
     tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {})
@@ -59,7 +60,7 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        JSON.stringify({ description,selectedOptions }),
+        JSON.stringify({ description, selectedOptions, apiKey }),
         { withCredentials: true }
       );
 
@@ -100,6 +101,15 @@ const InteractiveForm = () => {
 
   return (
     <div className="w-full max-w-2xl bg-inherit relative px-2">
+      <div className="mb-4">
+        <input
+          type="password"
+          placeholder="Enter your OpenAI API key"
+          value={apiKey}
+          onChange={(e) => setApiKey(e.target.value)}
+          className="w-full bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800 placeholder:text-gray-500"
+        />
+      </div>
       <PromptForm handleSubmit={handleSubmit} description={description} loading={loading} setDescription={setDescription}/>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 mb-6">
