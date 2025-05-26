@@ -20,6 +20,7 @@ const InteractiveForm = () => {
   const [tweetIdeas, setTweetIdeas] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string>("");
+  const [webhookUrl, setWebhookUrl] = useState<string>("");
   const [mounted, setMounted] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string,string>>(
     tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {})
@@ -28,7 +29,7 @@ const InteractiveForm = () => {
   const exportTweet = async (tweet: string) => {
     try {
       await axios.post(
-        BASE_URL + "/api/google-sheets",
+        webhookUrl || (BASE_URL + "/api/google-sheets"),
         JSON.stringify({ tweet }),
         { headers: { "Content-Type": "application/json" } }
       );
@@ -107,6 +108,15 @@ const InteractiveForm = () => {
           placeholder="Enter your OpenAI API key"
           value={apiKey}
           onChange={(e) => setApiKey(e.target.value)}
+          className="w-full bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800 placeholder:text-gray-500"
+        />
+      </div>
+      <div className="mb-4">
+        <input
+          type="text"
+          placeholder="Enter Google Sheets webhook URL (optional)"
+          value={webhookUrl}
+          onChange={(e) => setWebhookUrl(e.target.value)}
           className="w-full bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800 placeholder:text-gray-500"
         />
       </div>
