@@ -66,8 +66,16 @@ REDIS_PORT =
 REDIS_HOST =
 REDIS_PASSWORD =
 NEXT_PUBLIC_BASE_URL = "Enter base url of you deployment"
-GOOGLE_SHEETS_WEBHOOK_URL = "Webhook URL for saving tweets to Google Sheets"
+GOOGLE_SHEETS_WEBHOOK_URL = "Webhook URL for saving tweets to Google Sheets (optional)"
+GOOGLE_SHEETS_SPREADSHEET_ID = "Google Spreadsheet ID"
+GOOGLE_SHEETS_CLIENT_EMAIL = "Service account client email"
+GOOGLE_SHEETS_PRIVATE_KEY = "Service account private key"
+GOOGLE_SHEETS_SHEET_NAME = "Worksheet name (optional, defaults to Sheet1)"
 ```
+
+If `GOOGLE_SHEETS_WEBHOOK_URL` is omitted, the API route uses the Google Sheets API
+with the above credentials to append each tweet to the first empty row of the
+specified worksheet.
 
 ## Screenshots
 
