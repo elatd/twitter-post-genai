@@ -12,6 +12,7 @@
     "@google/generative-ai": "^0.21.0",
     "openai": "^4.28.0",
     "axios": "^1.7.9",
+    "googleapis": "^132.0.0",
     "ioredis": "^5.4.2",
     "next": "15.1.5",
     "react": "^19.0.0",
