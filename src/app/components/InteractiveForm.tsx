@@ -76,8 +76,12 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        JSON.stringify({ description, selectedOptions, apiKey }),
-        { withCredentials: true }
+        { description, selectedOptions, apiKey },
+        { 
+          headers: {
+            'Content-Type': 'application/json'
+          }
+        }
       );
 
       if (response.status !== 200) {
