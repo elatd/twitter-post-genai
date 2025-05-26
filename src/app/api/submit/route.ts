@@ -1,12 +1,12 @@
 // import redis from "@/app/lib/redis";
-import { GoogleGenerativeAI } from "@google/generative-ai";
+import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
 // // rate limit configuration
 // const RATE_LIMIT = 25; // maximum number of requests in window
 // const RATE_LIMIT_WINDOW = 60; // time in seconds
 
-const API_KEY: string = process.env.GEMINI_AI_API_KEY || "";
+const API_KEY: string = process.env.OPENAI_API_KEY || "";
 interface ResponseType {
   description :string,
   options: Record<string,string>
@@ -54,8 +54,7 @@ export async function POST(req: Request) {
     //   await redis.expire(rateLimitKey, RATE_LIMIT_WINDOW); // Set TTL for 60 seconds
     // }
 
-    const genAI = new GoogleGenerativeAI(API_KEY);
-    const model = await genAI.getGenerativeModel({ model: "gemini-1.5-flash" });
+    const openai = new OpenAI({ apiKey: API_KEY });
     let prompt = `Generate 3 engaging twitter tweet (of length at least 16 words), make sure to separate each tweet with "###".`;
     
     if(description) {
@@ -72,10 +71,14 @@ export async function POST(req: Request) {
       prompt += ` Additionally, consider these aspects: ${selectedOptions}.`;
     }
 
-    const result = await model.generateContent([prompt]);
+    const result = await openai.chat.completions.create({
+      model: "gpt-4",
+      messages: [{ role: "user", content: prompt }],
+      temperature: 0.7,
+    });
 
-    if (result && result.response) {
-      const generatedTweet = result.response.text().trim().split('###').map(tweet => tweet.trim());
+    if (result.choices[0]?.message?.content) {
+      const generatedTweet = result.choices[0].message.content.trim().split('###').map(tweet => tweet.trim());
 
       return NextResponse.json({ tweet: generatedTweet });
     } else {

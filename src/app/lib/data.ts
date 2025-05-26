@@ -13,6 +13,7 @@ const tweetCategories : TweetCategory[] = [
         "AI & Tech",
         "Politics",
         "Entertainment",
+       "Crypto",
         "Sports",
         "Finance & Stocks",
         "Climate Change",

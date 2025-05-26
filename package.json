@@ -10,6 +10,7 @@
   },
   "dependencies": {
     "@google/generative-ai": "^0.21.0",
+    "openai": "^4.28.0",
     "axios": "^1.7.9",
     "ioredis": "^5.4.2",
     "next": "15.1.5",
