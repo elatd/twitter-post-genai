@@ -28,11 +28,26 @@ const InteractiveForm = () => {
 
   const exportTweet = async (tweet: string) => {
     try {
-      await axios.post(
-        webhookUrl || (BASE_URL + "/api/google-sheets"),
-        JSON.stringify({ tweet }),
-        { headers: { "Content-Type": "application/json" } }
-      );
+      if (webhookUrl) {
+        // Direct webhook request
+        await fetch(webhookUrl, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tweet }),
+        });
+      } else {
+        // Local API route request
+        await fetch(`${BASE_URL}/api/google-sheets`, {
+          method: "POST",
+          headers: {
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify({ tweet }),
+        });
+      }
+      
       toast("Saved to Google Sheets", {
         icon: "✅",
         style: {
@@ -141,16 +156,6 @@ const InteractiveForm = () => {
           <div className="animate-spin rounded-full h-6 w-6 border-t-2 border-b-2 border-gray-300"></div>
         </div>
       )}
-
-      {/* { tweetIdeas.length > 0  && 
-        <Button onClick={()=>  toast.promise(fetchTweetIdeas(), {
-            loading: "Regenerating...",
-            success: <b> Regenerated successfully!</b>,
-            error: <b> Could not regenerate.</b>
-          })} className="border border-white rounded-md p-2 flex gap-2 items-center text-sm font-medium hover:bg-white hover:text-black duration-500 transition-all ease-in">
-          Regenrate <GrPowerCycle size={15} />
-        </Button>
-      } */}
 
       {tweetIdeas.length > 0 && tweetIdeas.map((tweet,idx) => (
         <div key={idx} >
