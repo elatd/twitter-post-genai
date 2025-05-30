@@ -22,8 +22,14 @@ const InteractiveForm = () => {
   const [apiKey, setApiKey] = useState<string>("");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
   const [mounted, setMounted] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string,string>>(
-    tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {})
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
+    tweetCategories.reduce(
+      (acc, category) => ({
+        ...acc,
+        [category.key]: category.key === "trending" ? "Crypto" : "",
+      }),
+      {}
+    )
   );
 
   const exportTweet = async (tweet: string) => {
