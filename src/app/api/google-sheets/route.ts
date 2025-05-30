@@ -36,6 +36,18 @@ export async function POST(req: Request) {
     }
   }
 
+  // When no webhook is provided, ensure that Google Sheets credentials exist
+  if (
+    !process.env.GOOGLE_SHEETS_SPREADSHEET_ID ||
+    !process.env.GOOGLE_SHEETS_CLIENT_EMAIL ||
+    !process.env.GOOGLE_SHEETS_PRIVATE_KEY
+  ) {
+    return NextResponse.json(
+      { message: "Google Sheets configuration not found" },
+      { status: 500 }
+    );
+  }
+
   try {
     await appendTweetToSheet(tweet);
     return NextResponse.json({ success: true });
