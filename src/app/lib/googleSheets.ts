@@ -1,6 +1,6 @@
 import { google } from 'googleapis';
 
-export async function appendTweetToSheet(tweet: string) {
+export async function appendTweetToSheet(tweet: string, date: string) {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
   const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
@@ -21,11 +21,11 @@ export async function appendTweetToSheet(tweet: string) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${sheetName}!A:A`,
+    range: `${sheetName}!A:B`,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: {
-      values: [[tweet]],
+      values: [[tweet, date]],
     },
   });
 }

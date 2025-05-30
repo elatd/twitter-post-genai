@@ -20,6 +20,7 @@ const InteractiveForm = () => {
   const [loading, setLoading] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string>("");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
+  const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [mounted, setMounted] = useState(false);
   const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
     tweetCategories.reduce(
@@ -34,12 +35,13 @@ const InteractiveForm = () => {
   const exportTweet = async (tweet: string) => {
     const loadingToast = toast.loading("Saving tweet...");
     try {
+      const payload = { tweet, date: selectedDate, webhookUrl };
       const response = await fetch(`${BASE_URL}/api/google-sheets`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tweet, webhookUrl }),
+        body: JSON.stringify(payload),
       });
 
       if (!response.ok) {
@@ -143,6 +145,18 @@ const InteractiveForm = () => {
           value={webhookUrl}
           onChange={(e) => setWebhookUrl(e.target.value)}
           className="w-full bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800 placeholder:text-gray-500"
+        />
+      </div>
+      <div className="mb-4">
+        <label htmlFor="tweetDate" className="block text-sm font-semibold text-gray-300 mb-1">
+          Tweet Date
+        </label>
+        <input
+          type="date"
+          id="tweetDate"
+          value={selectedDate}
+          onChange={(e) => setSelectedDate(e.target.value)}
+          className="w-full bg-transparent border-2 border-gray-800 rounded-lg p-2.5 text-gray-100 shadow focus:outline-none focus:ring-2 focus:ring-gray-800"
         />
       </div>
       <PromptForm handleSubmit={handleSubmit} description={description} loading={loading} setDescription={setDescription}/>
