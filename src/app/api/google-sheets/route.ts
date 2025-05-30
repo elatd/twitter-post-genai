@@ -2,8 +2,8 @@ import { NextResponse } from "next/server";
 import { appendTweetToSheet } from "../../lib/googleSheets";
 
 export async function POST(req: Request) {
-  const { tweet } = await req.json();
-  const webhookUrl = process.env.GOOGLE_SHEETS_WEBHOOK_URL;
+  const { tweet, webhookUrl: clientWebhookUrl } = await req.json();
+  const webhookUrl = clientWebhookUrl || process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
   if (!tweet) {
     return NextResponse.json(

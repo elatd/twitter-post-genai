@@ -34,27 +34,13 @@ const InteractiveForm = () => {
   const exportTweet = async (tweet: string) => {
     const loadingToast = toast.loading("Saving tweet...");
     try {
-      let response;
-      
-      if (webhookUrl) {
-        // Direct webhook request
-        response = await fetch(webhookUrl, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tweet }),
-        });
-      } else {
-        // Local API route request
-        response = await fetch(`${BASE_URL}/api/google-sheets`, {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify({ tweet }),
-        });
-      }
+      const response = await fetch(`${BASE_URL}/api/google-sheets`, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify({ tweet, webhookUrl }),
+      });
 
       if (!response.ok) {
         throw new Error(`HTTP error! status: ${response.status}`);
