@@ -10,10 +10,9 @@ import PromptForm from "./PromptForm";
 import Dropdown from "./Dropdown";
 import tweetCategories, { TweetCategory } from "../lib/data";
 
-const BASE_URL: string =
-  process.env.NODE_ENV == "production"
-    ? "https://twitter-post-genai.vercel.app"
-    : "http://localhost:3000";
+// Resolve API base URL from environment. When NEXT_PUBLIC_BASE_URL is not set,
+// fall back to relative paths so API calls work in any deployment.
+const BASE_URL: string = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 const InteractiveForm = () => {
   const [description, setDescription] = useState<string>("");
