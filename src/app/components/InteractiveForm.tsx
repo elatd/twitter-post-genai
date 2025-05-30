@@ -95,8 +95,8 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        { description, selectedOptions, apiKey },
-        { 
+        { description, options: selectedOptions, apiKey },
+        {
           headers: {
             'Content-Type': 'application/json'
           }
