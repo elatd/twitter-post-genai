@@ -43,7 +43,9 @@ const InteractiveForm = () => {
       });
 
       if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
+        const data = await response.json().catch(() => null);
+        const message = data?.message || `HTTP error! status: ${response.status}`;
+        throw new Error(message);
       }
       
       toast.dismiss(loadingToast);
