@@ -63,7 +63,15 @@ export async function POST(req: Request) {
     // }
 
     const openai = new OpenAI({ apiKey });
-    let prompt = `Generate 3 engaging twitter tweet (of length at least 16 words), make sure to separate each tweet with "###".`;
+    let prompt = `Generate 3 engaging twitter tweet (of length at least 16 words), make sure to separate each tweet with "###".\n` +
+      `Follow these style rules:\n` +
+      `- Be specific and anchor every tweet to at least one concrete detail (number, quote, micro-story, snippet).\n` +
+      `- Mix the formats so the three tweets include styles like a single-liner, a thread opener ("1/🧵"), a stat-drop, a question or a mini-story.\n` +
+      `- Skip empty hype, avoiding terms such as "game-changer", "revolutionary" or "next-level".\n` +
+      `- Talk in first-person unless a thread benefits from third-person.\n` +
+      `- Use emojis only when they add clarity or tone.\n` +
+      `- Keep each tweet under 280 characters including thread numbers.\n` +
+      `- Replace long dashes with simple hyphens.`;
     
     if(description) {
       prompt += ` The tweet should be based on this description: "${description}".`;
