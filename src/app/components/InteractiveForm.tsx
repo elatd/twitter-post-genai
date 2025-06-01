@@ -37,7 +37,7 @@ const InteractiveForm = () => {
   const exportTweet = async (tweet: string) => {
     const loadingToast = toast.loading("Saving tweet...");
     try {
-    const payload = { tweet, tweet_date: selectedDate, webhookUrl };
+    const payload = { tweet, date: selectedDate, webhookUrl };
       const response = await fetch(`${BASE_URL}/api/google-sheets`, {
         method: "POST",
         headers: {
