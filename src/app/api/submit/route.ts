@@ -6,7 +6,6 @@ import { NextResponse } from "next/server";
 // const RATE_LIMIT = 25; // maximum number of requests in window
 // const RATE_LIMIT_WINDOW = 60; // time in seconds
 
-const API_KEY: string = process.env.OPENAI_API_KEY || "";
 interface ResponseType {
   description :string,
   options: Record<string,string>,
