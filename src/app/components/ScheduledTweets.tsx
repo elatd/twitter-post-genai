@@ -18,7 +18,12 @@ const ScheduledTweets = () => {
   useEffect(() => {
     const fetchTweets = async () => {
       try {
-        const response = await fetch(`${BASE_URL}/api/scheduled`);
+        const webhook =
+          typeof window !== "undefined"
+            ? localStorage.getItem("webhookUrl") || ""
+            : "";
+        const query = webhook ? `?webhookUrl=${encodeURIComponent(webhook)}` : "";
+        const response = await fetch(`${BASE_URL}/api/scheduled${query}`);
         if (!response.ok) {
           throw new Error(`HTTP error! status: ${response.status}`);
         }
