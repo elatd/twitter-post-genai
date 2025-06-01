@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { appendTweetToSheet } from "../../lib/googleSheets";
 
 export async function POST(req: Request) {
-  const { tweet, date, webhookUrl: clientWebhookUrl } = await req.json();
+  const { tweet, tweet_date: date, webhookUrl: clientWebhookUrl } = await req.json();
   const webhookUrl = clientWebhookUrl || process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
   if (!tweet) {
@@ -19,7 +19,7 @@ export async function POST(req: Request) {
         headers: {
           "Content-Type": "application/json",
         },
-        body: JSON.stringify({ tweet, date }),
+        body: JSON.stringify({ tweet, tweet_date: date }),
       });
 
       if (!response.ok) {
