@@ -99,6 +99,17 @@ from your spreadsheet. When you provide a Google Sheets webhook on the Generate
 page, the URL is stored locally so the Scheduled tab can fetch tweets from the
 same sheet.
 
+## Spreadsheet Layout
+
+```
+Row 1 (headers): tweet | date | posted
+Rows 2+ : tweet text | YYYY-MM-DD | TRUE/FALSE
+```
+
+The first row must contain these headers because `getScheduledTweets` skips it
+when reading your sheet. Some webhook services send a `timestamp_incoming_webhook`
+field&mdash;map this value to the `date` column.
+
 ## Screenshots
 
 ![App Home](/public/App_home.png)
