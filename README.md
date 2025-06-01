@@ -11,6 +11,7 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 - 🔒 Secure and private user data.
 - 🚀 Built-in rate limiting for fair use.
 - 🛠️ Easy integration via REST API.
+- 📄 Upload a PDF to receive a summary with bullet points.
 
 ## Tech Stack
 
@@ -29,6 +30,17 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 | Parameter     | Type     | Description                              |
 | :------------ | :------- | :--------------------------------------- |
 | `description` | `string` | Specify your requirements for the tweet. |
+
+#### Summarize PDF
+
+```http
+  POST /api/summarize-pdf
+```
+
+| Parameter | Type | Description |
+| :-------- | :--- | :---------- |
+| `file`    | `PDF` | PDF file to summarize |
+| `apiKey`  | `string` | Your OpenAI API key |
 
 ## Run Locally
 

@@ -1,4 +1,4 @@
-// import redis from "@/app/lib/redis";
+// Tweet generation API route. Removed unused-vars ESLint directive.
 import OpenAI from "openai";
 import { NextResponse } from "next/server";
 
@@ -78,8 +78,7 @@ export async function POST(req: Request) {
       prompt += ` The tweet should be based on this description: "${description}".`;
     }
 
-    const selectedOptions = options ? Object.entries(options)
-       // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  const selectedOptions = options ? Object.entries(options)
       .filter(([_, value]) => value.trim() !== "")
       .map(([key, value]) => `${key}: "${value}"`)
       .join(", ") : "";
