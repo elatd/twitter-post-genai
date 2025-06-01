@@ -2,7 +2,7 @@ import { NextResponse } from "next/server";
 import { appendTweetToSheet } from "../../lib/googleSheets";
 
 export async function POST(req: Request) {
-  const { tweet, tweet_date: date, webhookUrl: clientWebhookUrl } = await req.json();
+  const { tweet, date, webhookUrl: clientWebhookUrl } = await req.json();
   const webhookUrl = clientWebhookUrl || process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
   if (!tweet) {
@@ -14,13 +14,13 @@ export async function POST(req: Request) {
 
   if (webhookUrl) {
     try {
-      const response = await fetch(webhookUrl, {
-        method: "POST",
-        headers: {
-          "Content-Type": "application/json",
-        },
-        body: JSON.stringify({ tweet, tweet_date: date }),
-      });
+    const response = await fetch(webhookUrl, {
+      method: "POST",
+      headers: {
+        "Content-Type": "application/json",
+      },
+      body: JSON.stringify({ tweet, date }),
+    });
 
       if (!response.ok) {
         throw new Error(`Failed to export tweet: ${response.statusText}`);
