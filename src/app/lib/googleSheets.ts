@@ -5,6 +5,7 @@ export async function appendTweetToSheet(tweet: string, date: string) {
   const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
   const sheetName = process.env.GOOGLE_SHEETS_SHEET_NAME || 'Sheet1';
+  const dateSheetName = process.env.GOOGLE_SHEETS_DATE_SHEET_NAME || 'tweet_date';
 
   if (!spreadsheetId || !clientEmail || !privateKey) {
     throw new Error('Google Sheets environment variables not configured');
@@ -22,6 +23,37 @@ export async function appendTweetToSheet(tweet: string, date: string) {
   await sheets.spreadsheets.values.append({
     spreadsheetId,
     range: `${sheetName}!A:B`,
+    valueInputOption: 'USER_ENTERED',
+    insertDataOption: 'INSERT_ROWS',
+    requestBody: {
+      values: [[tweet, date]],
+    },
+  });
+
+  // Ensure the tweet_date sheet exists
+  const spreadsheet = await sheets.spreadsheets.get({ spreadsheetId });
+  const sheetExists = spreadsheet.data.sheets?.some(
+    (s) => s.properties?.title === dateSheetName
+  );
+
+  if (!sheetExists) {
+    await sheets.spreadsheets.batchUpdate({
+      spreadsheetId,
+      requestBody: {
+        requests: [
+          {
+            addSheet: {
+              properties: { title: dateSheetName },
+            },
+          },
+        ],
+      },
+    });
+  }
+
+  await sheets.spreadsheets.values.append({
+    spreadsheetId,
+    range: `${dateSheetName}!A:B`,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: {
