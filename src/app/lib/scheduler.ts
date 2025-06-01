@@ -29,9 +29,12 @@ async function processSheet() {
   const rows = res.data.values || [];
   for (let i = 1; i < rows.length; i++) {
     const [content, dateStr, posted] = rows[i];
+    // The second column may store either an explicit date or the
+    // webhook-provided timestamp. Use whatever value is present.
+    const resolvedDateStr = dateStr;
     if (posted && posted.toLowerCase() === 'true') continue;
-    if (!content || !dateStr) continue;
-    const scheduled = new Date(dateStr);
+    if (!content || !resolvedDateStr) continue;
+    const scheduled = new Date(resolvedDateStr);
     if (scheduled <= now) {
       try {
         await sendTweet(content);
