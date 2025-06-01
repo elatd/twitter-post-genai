@@ -11,6 +11,7 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 - 🔒 Secure and private user data.
 - 🚀 Built-in rate limiting for fair use.
 - 🛠️ Easy integration via REST API.
+- 📄 Upload a PDF to receive a summary with bullet points.
 
 ## Tech Stack
 
@@ -29,6 +30,17 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 | Parameter     | Type     | Description                              |
 | :------------ | :------- | :--------------------------------------- |
 | `description` | `string` | Specify your requirements for the tweet. |
+
+#### Summarize PDF
+
+```http
+  POST /api/summarize-pdf
+```
+
+| Parameter | Type | Description |
+| :-------- | :--- | :---------- |
+| `file`    | `PDF` | PDF file to summarize |
+| `apiKey`  | `string` | Your OpenAI API key |
 
 ## Run Locally
 
@@ -53,7 +65,13 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 4. Start the server
 
 ```bash
-  npm run dev
+ npm run dev
+```
+
+5. Start the scheduler (optional)
+
+```bash
+  npm run start:scheduler
 ```
 
 ## Environment Variables
@@ -71,6 +89,10 @@ GOOGLE_SHEETS_SPREADSHEET_ID = "Google Spreadsheet ID"
 GOOGLE_SHEETS_CLIENT_EMAIL = "Service account client email"
 GOOGLE_SHEETS_PRIVATE_KEY = "Service account private key"
 GOOGLE_SHEETS_SHEET_NAME = "Worksheet name (optional, defaults to Sheet1)"
+TWITTER_API_KEY = "Twitter API key"
+TWITTER_API_SECRET = "Twitter API secret"
+TWITTER_ACCESS_TOKEN = "Twitter access token"
+TWITTER_ACCESS_SECRET = "Twitter access secret"
 ```
 
 If `NEXT_PUBLIC_BASE_URL` is not provided, the frontend uses relative paths for API requests.
@@ -78,6 +100,9 @@ If `NEXT_PUBLIC_BASE_URL` is not provided, the frontend uses relative paths for 
 If `GOOGLE_SHEETS_WEBHOOK_URL` is omitted, the API route uses the Google Sheets API
 with the above credentials to append each tweet to the first empty row of the
 specified worksheet.
+
+The scheduler uses the Twitter environment variables above to post tweets
+automatically based on entries in your Google Sheet.
 
 ## Screenshots
 
