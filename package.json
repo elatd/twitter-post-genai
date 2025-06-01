@@ -10,7 +10,6 @@
     "start:scheduler": "node src/app/lib/scheduler.ts"
   },
   "dependencies": {
-    "@google/generative-ai": "^0.21.0",
     "openai": "^4.28.0",
     "axios": "^1.7.9",
     "googleapis": "^132.0.0",
