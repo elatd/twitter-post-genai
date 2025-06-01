@@ -72,6 +72,7 @@ export interface WebhookTweet {
   tweet?: string;
   content?: string;
   date?: string;
+  timestamp_incoming_webhook?: string;
   posted?: string | boolean;
   Posted?: string | boolean;
 }
@@ -93,7 +94,7 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
         : Boolean(postedValue);
       return {
         content: item.tweet ?? item.content ?? '',
-        date: item.date ?? '',
+        date: item.date ?? item.timestamp_incoming_webhook ?? '',
         posted,
       } as ScheduledTweet;
     });
