@@ -94,6 +94,12 @@ specified worksheet.
 The scheduler uses the Twitter environment variables above to post tweets
 automatically based on entries in your Google Sheet.
 
+Run the scheduler using:
+
+```bash
+npm run start:scheduler
+```
+
 The web app now includes a **Scheduled** tab where you can view upcoming tweets
 from your spreadsheet. When you provide a Google Sheets webhook on the Generate
 page, the URL is stored locally so the Scheduled tab can fetch tweets from the
