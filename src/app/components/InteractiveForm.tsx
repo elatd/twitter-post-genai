@@ -8,7 +8,7 @@ import { RiFileAddLine } from "react-icons/ri";
 import { Button } from "./Button";
 import PromptForm from "./PromptForm";
 import Dropdown from "./Dropdown";
-import tweetCategories, { TweetCategory } from "../lib/data";
+import tweetCategories, { TweetCategory, DEFAULT_LENGTH, LONG_LENGTH } from "../lib/data";
 
 // Resolve API base URL from environment. When NEXT_PUBLIC_BASE_URL is not set,
 // fall back to relative paths so API calls work in any deployment.
@@ -22,15 +22,17 @@ const InteractiveForm = () => {
   const [webhookUrl, setWebhookUrl] = useState<string>("");
   const [selectedDate, setSelectedDate] = useState<string>(new Date().toISOString().split('T')[0]);
   const [mounted, setMounted] = useState(false);
-  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>(
-    tweetCategories.reduce(
+  const [longerTweet, setLongerTweet] = useState<boolean>(false);
+  const [selectedOptions, setSelectedOptions] = useState<Record<string, string>>({
+    length: DEFAULT_LENGTH,
+    ...tweetCategories.reduce(
       (acc, category) => ({
         ...acc,
         [category.key]: category.key === "trending" ? "Crypto" : "",
       }),
       {}
-    )
-  );
+    ),
+  });
 
   const exportTweet = async (tweet: string) => {
     const loadingToast = toast.loading("Saving tweet...");
@@ -133,7 +135,11 @@ const InteractiveForm = () => {
     } finally {
       setLoading(false);
       setDescription("");
-      setSelectedOptions(tweetCategories.reduce((acc, category) => ({...acc, [category.key]: ''}), {}));
+      setLongerTweet(false);
+      setSelectedOptions({
+        length: DEFAULT_LENGTH,
+        ...tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {}),
+      });
     }
   };
 
@@ -172,6 +178,24 @@ const InteractiveForm = () => {
         />
       </div>
       <PromptForm handleSubmit={handleSubmit} description={description} loading={loading} setDescription={setDescription}/>
+
+      <div className="mb-4 flex items-center gap-2">
+        <input
+          id="longerTweet"
+          type="checkbox"
+          checked={longerTweet}
+          onChange={(e) => {
+            const checked = e.target.checked;
+            setLongerTweet(checked);
+            setSelectedOptions((prev) => ({
+              ...prev,
+              length: checked ? LONG_LENGTH : DEFAULT_LENGTH,
+            }));
+          }}
+          className="h-4 w-4 text-gray-800 border-gray-300 rounded focus:ring-gray-800"
+        />
+        <label htmlFor="longerTweet" className="text-sm text-gray-300">Longer tweets</label>
+      </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 mb-6">
         {tweetCategories.map((category : TweetCategory) => (
