@@ -78,9 +78,8 @@ export async function POST(req: Request) {
       prompt += ` The tweet should be based on this description: "${description}".`;
     }
 
-    const selectedOptions = options ? Object.entries(options)
-       // eslint-disable-next-line @typescript-eslint/no-unused-vars
-      .filter(([_, value]) => value.trim() !== "")
+  const selectedOptions = options ? Object.entries(options)
+    .filter(([_, value]) => value.trim() !== "")
       .map(([key, value]) => `${key}: "${value}"`)
       .join(", ") : "";
 

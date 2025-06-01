@@ -36,7 +36,37 @@ export interface ScheduledTweet {
   posted: boolean;
 }
 
-export async function getScheduledTweets(): Promise<ScheduledTweet[]> {
+export interface WebhookTweet {
+  tweet?: string;
+  content?: string;
+  date?: string;
+  posted?: string | boolean;
+  Posted?: string | boolean;
+}
+
+export async function getScheduledTweets(webhookUrl?: string): Promise<ScheduledTweet[]> {
+  if (webhookUrl) {
+    const response = await fetch(webhookUrl);
+    if (!response.ok) {
+      throw new Error('Failed to fetch scheduled tweets via webhook');
+    }
+    const data = await response.json();
+    if (!Array.isArray(data)) {
+      throw new Error('Unexpected data format from webhook');
+    }
+    return data.map((item: WebhookTweet) => {
+      const postedValue = item.posted ?? item.Posted ?? false;
+      const posted = typeof postedValue === 'string'
+        ? postedValue.toLowerCase() === 'true'
+        : Boolean(postedValue);
+      return {
+        content: item.tweet ?? item.content ?? '',
+        date: item.date ?? '',
+        posted,
+      } as ScheduledTweet;
+    });
+  }
+
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
   const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;

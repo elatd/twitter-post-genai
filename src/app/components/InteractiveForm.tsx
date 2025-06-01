@@ -71,8 +71,20 @@ const InteractiveForm = () => {
   };
 
   useEffect(() => {
+    const storedWebhook = typeof window !== 'undefined' ? localStorage.getItem('webhookUrl') || '' : '';
+    setWebhookUrl(storedWebhook);
     setMounted(true);
   }, []);
+
+  useEffect(() => {
+    if (typeof window !== 'undefined') {
+      if (webhookUrl) {
+        localStorage.setItem('webhookUrl', webhookUrl);
+      } else {
+        localStorage.removeItem('webhookUrl');
+      }
+    }
+  }, [webhookUrl]);
 
   const handleSubmit = (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault();
