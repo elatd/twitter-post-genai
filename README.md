@@ -11,6 +11,7 @@ An AI-driven tool that generates creative and engaging tweet ideas based on user
 - 🔒 Secure and private user data.
 - 🚀 Built-in rate limiting for fair use.
 - 🛠️ Easy integration via REST API.
+- 📅 View scheduled tweets saved in your Google Sheet.
 
 ## Tech Stack
 
@@ -91,6 +92,9 @@ specified worksheet.
 
 The scheduler uses the Twitter environment variables above to post tweets
 automatically based on entries in your Google Sheet.
+
+The web app now includes a **Scheduled** tab where you can view upcoming tweets
+from your spreadsheet.
 
 ## Screenshots
 
