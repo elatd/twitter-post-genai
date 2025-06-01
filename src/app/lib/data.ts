@@ -5,7 +5,10 @@ export interface TweetCategory {
   }
 
   // Define the tweetCategories array with the correct types and values
-const tweetCategories : TweetCategory[] = [
+  export const DEFAULT_LENGTH = "Medium (100-200 chars)";
+  export const LONG_LENGTH = "Long (200-280 chars)";
+
+  const tweetCategories : TweetCategory[] = [
     {
       name: "Trending Topics",
       key: "trending",
@@ -33,15 +36,6 @@ const tweetCategories : TweetCategory[] = [
       ],
     },
     {
-      name: "Tweet Length",
-      key: "length",
-      options: [
-        "Short (under 100 chars)",
-        "Medium (100-200 chars)",
-        "Long (200-280 chars)",
-      ],
-    },
-    {
       name: "Purpose",
       key: "purpose",
       options: [
@@ -51,16 +45,6 @@ const tweetCategories : TweetCategory[] = [
         "Generic",
         "Persuasive",
         "Thought-Provoking",
-      ],
-    },
-    {
-      name: "Hashtag Usage",
-      key: "hashtags",
-      options: [
-        "No Hashtags",
-        "Trending Hashtags",
-        "Custom Hashtags",
-        "Industry-Specific Hashtags",
       ],
     },
   ];
