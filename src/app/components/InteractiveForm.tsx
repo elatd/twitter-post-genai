@@ -116,7 +116,6 @@ const InteractiveForm = () => {
       }
 
       const data = await response.data;
-      console.log(data);
 
       const tweets = data.tweet;
 

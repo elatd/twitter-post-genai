@@ -44,7 +44,6 @@ async function processSheet() {
           valueInputOption: 'USER_ENTERED',
           requestBody: { values: [['TRUE']] },
         });
-        console.log(`Tweet posted for row ${i + 1}`);
       } catch (err) {
         console.error('Error posting tweet:', err);
       }
