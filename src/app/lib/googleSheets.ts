@@ -1,6 +1,10 @@
 import { google } from 'googleapis';
 
-export async function appendTweetToSheet(tweet: string, date: string) {
+export async function appendTweetToSheet(
+  timestamp: string,
+  tweet: string,
+  tweetDate: string
+) {
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
   const clientEmail = process.env.GOOGLE_SHEETS_CLIENT_EMAIL;
   const privateKey = process.env.GOOGLE_SHEETS_PRIVATE_KEY;
@@ -20,13 +24,37 @@ export async function appendTweetToSheet(tweet: string, date: string) {
 
   const sheets = google.sheets({ version: 'v4', auth });
 
+  const requiredHeaders = [
+    'timestamp_incoming_webhook',
+    'tweet',
+    'tweet_date',
+  ];
+
+  // Ensure headers exist and are correct
+  const headerRes = await sheets.spreadsheets.values.get({
+    spreadsheetId,
+    range: `${sheetName}!A1:C1`,
+  });
+  const currentHeaders = headerRes.data.values?.[0] || [];
+  const headersMismatch = requiredHeaders.some(
+    (h, i) => currentHeaders[i] !== h
+  );
+  if (headersMismatch) {
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: `${sheetName}!A1:C1`,
+      valueInputOption: 'RAW',
+      requestBody: { values: [requiredHeaders] },
+    });
+  }
+
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${sheetName}!A:B`,
+    range: `${sheetName}!A:C`,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: {
-      values: [[tweet, date]],
+      values: [[timestamp, tweet, tweetDate]],
     },
   });
 
@@ -53,11 +81,11 @@ export async function appendTweetToSheet(tweet: string, date: string) {
 
   await sheets.spreadsheets.values.append({
     spreadsheetId,
-    range: `${dateSheetName}!A:B`,
+    range: `${dateSheetName}!A:C`,
     valueInputOption: 'USER_ENTERED',
     insertDataOption: 'INSERT_ROWS',
     requestBody: {
-      values: [[tweet, date]],
+      values: [[timestamp, tweet, tweetDate]],
     },
   });
 }
@@ -120,14 +148,31 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
 
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${sheetName}!A:C`,
+    range: sheetName,
   });
 
   const rows = res.data.values || [];
-  return rows.slice(1).map((row) => ({
-    content: row[0] || '',
-    date: row[1] || '',
-    posted: (row[2] || '').toLowerCase() === 'true',
-  }));
+  if (rows.length === 0) {
+    return [];
+  }
+
+  const headers = rows[0];
+  const idxTimestamp = headers.indexOf('timestamp_incoming_webhook');
+  const idxTweet = headers.indexOf('tweet');
+  const idxTweetDate = headers.indexOf('tweet_date');
+  const idxPosted = headers.indexOf('posted');
+
+  return rows.slice(1).map((row) => {
+    const content =
+      (idxTweet >= 0 ? row[idxTweet] : undefined) ?? row[0] ?? '';
+    const date =
+      (idxTweetDate >= 0 ? row[idxTweetDate] : undefined) ??
+      (idxTimestamp >= 0 ? row[idxTimestamp] : undefined) ??
+      row[1] ?? '';
+    const postedVal =
+      (idxPosted >= 0 ? row[idxPosted] : undefined) ?? row[2] ?? '';
+    const posted = String(postedVal).toLowerCase() === 'true';
+    return { content, date, posted } as ScheduledTweet;
+  });
 }
 
