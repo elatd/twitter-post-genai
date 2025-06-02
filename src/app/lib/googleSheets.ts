@@ -124,7 +124,7 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
       console.log('Received data from webhook:', data);
       
       // Handle both direct array and object containing tweets array
-      let tweetsArray: any[];
+      let tweetsArray: WebhookTweet[];
       if (Array.isArray(data)) {
         tweetsArray = data;
       } else if (data && typeof data === 'object' && Array.isArray(data.tweets)) {
