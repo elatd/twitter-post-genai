@@ -9,10 +9,11 @@ import { NextResponse } from "next/server";
 interface ResponseType {
   description :string,
   options: Record<string,string>,
-  apiKey: string
+  apiKey: string,
+  platform: "twitter" | "youtube"
 }
 export async function POST(req: Request) {
-  const { description, options={}, apiKey } :ResponseType = await req.json();
+  const { description, options={}, apiKey, platform } :ResponseType = await req.json();
 
   if (!apiKey) {
     return NextResponse.json(
@@ -62,16 +63,26 @@ export async function POST(req: Request) {
     // }
 
     const openai = new OpenAI({ apiKey });
-    let prompt = `Generate 3 engaging twitter tweets (of length at least 16 words), make sure to separate each tweet with "###".\n` +
-      `Follow these style rules:\n` +
-      `- Be specific and anchor every tweet to at least one concrete detail (number, quote, micro-story, snippet).\n` +
-      `- Mix the formats so the three tweets include styles like a single-liner, a thread opener ("1/"), a stat-drop, a question or a mini-story.\n` +
-      `- Skip empty hype, avoiding terms such as "game-changer", "revolutionary" or "next-level".\n` +
-      `- Talk in first-person unless a thread benefits from third-person.\n` +
-      `- Use an informal, conversational tone and avoid corporate jargon.\n` +
-      `- Do not include hashtags or emojis.\n` +
-      `- Keep each tweet under 280 characters including thread numbers.\n` +
-      `- Replace long dashes with simple hyphens.`;
+    let prompt = platform === "twitter" 
+      ? `Generate 3 engaging twitter tweets (of length at least 16 words), make sure to separate each tweet with "###".\n` +
+        `Follow these style rules:\n` +
+        `- Be specific and anchor every tweet to at least one concrete detail (number, quote, micro-story, snippet).\n` +
+        `- Mix the formats so the three tweets include styles like a single-liner, a thread opener ("1/"), a stat-drop, a question or a mini-story.\n` +
+        `- Skip empty hype, avoiding terms such as "game-changer", "revolutionary" or "next-level".\n` +
+        `- Talk in first-person unless a thread benefits from third-person.\n` +
+        `- Use an informal, conversational tone and avoid corporate jargon.\n` +
+        `- Do not include hashtags or emojis.\n` +
+        `- Keep each tweet under 280 characters including thread numbers.\n` +
+        `- Replace long dashes with simple hyphens.`
+      : `Generate 3 engaging YouTube video topics and outlines, make sure to separate each topic with "###".\n` +
+        `Follow these style rules:\n` +
+        `- Include a catchy title that would work well for YouTube.\n` +
+        `- Provide a brief outline of key points to cover.\n` +
+        `- Include specific examples, statistics, or demonstrations to reference.\n` +
+        `- Suggest visual elements or B-roll footage ideas.\n` +
+        `- Keep the content focused and engaging for the target audience.\n` +
+        `- Avoid clickbait while maintaining viewer interest.\n` +
+        `- Include a hook or opening that grabs attention in the first 30 seconds.`;
     
     if(description) {
       prompt += ` The tweet should be based on this description: "${description}".`;
@@ -93,16 +104,16 @@ export async function POST(req: Request) {
     });
 
     if (result.choices[0]?.message?.content) {
-      const generatedTweet = result.choices[0].message.content.trim().split('###').map(tweet => tweet.trim());
+      const generatedContent = result.choices[0].message.content.trim().split('###').map(content => content.trim());
 
-      return NextResponse.json({ tweet: generatedTweet });
+      return NextResponse.json({ content: generatedContent });
     } else {
-      throw new Error("Failed to generate tweet");
+      throw new Error(`Failed to generate ${platform} content`);
     }
   } catch (error: unknown) {
-    console.error("Error generting tweet:", error);
+    console.error(`Error generating ${platform} content:`, error);
     return NextResponse.json(
-      { error: "Failed to generate tweet" },
+      { error: `Failed to generate ${platform} content` },
       { status: 500 }
     );
   }

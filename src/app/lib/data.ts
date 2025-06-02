@@ -7,6 +7,10 @@ export interface TweetCategory {
   // Define the tweetCategories array with the correct types and values
   export const DEFAULT_LENGTH = "Medium (100-200 chars)";
   export const LONG_LENGTH = "Long (200-280 chars)";
+  export const YOUTUBE_DEFAULT_LENGTH = "5-10 minutes";
+  export const YOUTUBE_LONG_LENGTH = "15-20 minutes";
+
+  export type Platform = "twitter" | "youtube";
 
   const tweetCategories : TweetCategory[] = [
     {
@@ -48,5 +52,45 @@ export interface TweetCategory {
       ],
     },
   ];
+
+  export const youtubeCategories: TweetCategory[] = [
+    {
+      name: "Content Type",
+      key: "contentType",
+      options: [
+        "Tutorial",
+        "Review",
+        "Vlog",
+        "Commentary",
+        "Educational",
+        "Entertainment",
+        "Gaming",
+        "Tech Review",
+      ],
+    },
+    {
+      name: "Tone",
+      key: "tone",
+      options: [
+        "Professional",
+        "Casual",
+        "Energetic",
+        "Informative",
+        "Entertaining",
+        "Dramatic",
+      ],
+    },
+    {
+      name: "Target Audience",
+      key: "audience",
+      options: [
+        "Beginners",
+        "Intermediate",
+        "Advanced",
+        "General",
+        "Tech Enthusiasts",
+        "Students",
+      ],
+    },
+  ];
   export default tweetCategories;
-  

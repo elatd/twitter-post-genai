@@ -8,15 +8,24 @@ import { RiFileAddLine } from "react-icons/ri";
 import { Button } from "./Button";
 import PromptForm from "./PromptForm";
 import Dropdown from "./Dropdown";
-import tweetCategories, { TweetCategory, DEFAULT_LENGTH, LONG_LENGTH } from "../lib/data";
+import tweetCategories, { 
+  TweetCategory, 
+  DEFAULT_LENGTH, 
+  LONG_LENGTH,
+  YOUTUBE_DEFAULT_LENGTH,
+  YOUTUBE_LONG_LENGTH,
+  youtubeCategories,
+  Platform
+} from "../lib/data";
 
 // Resolve API base URL from environment. When NEXT_PUBLIC_BASE_URL is not set,
 // fall back to relative paths so API calls work in any deployment.
 const BASE_URL: string = process.env.NEXT_PUBLIC_BASE_URL || "";
 
 const InteractiveForm = () => {
+  const [platform, setPlatform] = useState<Platform>("twitter");
   const [description, setDescription] = useState<string>("");
-  const [tweetIdeas, setTweetIdeas] = useState<string[]>([]);
+  const [contentIdeas, setContentIdeas] = useState<string[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
   const [apiKey, setApiKey] = useState<string>("");
   const [webhookUrl, setWebhookUrl] = useState<string>("");
@@ -33,6 +42,10 @@ const InteractiveForm = () => {
       {}
     ),
   });
+  
+  const categories = platform === "twitter" ? tweetCategories : youtubeCategories;
+  const defaultLength = platform === "twitter" ? DEFAULT_LENGTH : YOUTUBE_DEFAULT_LENGTH;
+  const longLength = platform === "twitter" ? LONG_LENGTH : YOUTUBE_LONG_LENGTH;
 
   const exportTweet = async (tweet: string) => {
     const loadingToast = toast.loading("Saving tweet...");
@@ -103,7 +116,7 @@ const InteractiveForm = () => {
     try {
       const response = await axios.post(
         BASE_URL + "/api/submit",
-        { description, options: selectedOptions, apiKey },
+        { description, options: selectedOptions, apiKey, platform },
         {
           headers: {
             'Content-Type': 'application/json'
@@ -117,7 +130,7 @@ const InteractiveForm = () => {
 
       const data = await response.data;
 
-      const tweets = data.tweet;
+      const ideas = data.content;
 
       toast(" Generated successfully!", {
         icon: "👏",
@@ -127,7 +140,7 @@ const InteractiveForm = () => {
           color: "#fff",
         },
       });
-      setTweetIdeas(tweets);
+      setContentIdeas(ideas);
     } catch (error: unknown) {
       console.error("Error fetching tweet ideas:", error);
 
@@ -141,8 +154,8 @@ const InteractiveForm = () => {
       setDescription("");
       setLongerTweet(false);
       setSelectedOptions({
-        length: DEFAULT_LENGTH,
-        ...tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {}),
+        length: defaultLength,
+        ...categories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {}),
       });
     }
   };
@@ -151,6 +164,40 @@ const InteractiveForm = () => {
 
   return (
     <div className="w-full max-w-2xl bg-inherit relative px-2">
+      <div className="flex justify-center mb-6">
+        <div className="flex bg-gray-800 rounded-lg p-1">
+          <button
+            onClick={() => {
+              setPlatform("twitter");
+              setContentIdeas([]);
+              setSelectedOptions({
+                length: DEFAULT_LENGTH,
+                ...tweetCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {}),
+              });
+            }}
+            className={`px-4 py-2 rounded-md ${
+              platform === "twitter" ? "bg-gray-700 text-white" : "text-gray-400"
+            }`}
+          >
+            Twitter
+          </button>
+          <button
+            onClick={() => {
+              setPlatform("youtube");
+              setContentIdeas([]);
+              setSelectedOptions({
+                length: YOUTUBE_DEFAULT_LENGTH,
+                ...youtubeCategories.reduce((acc, category) => ({ ...acc, [category.key]: '' }), {}),
+              });
+            }}
+            className={`px-4 py-2 rounded-md ${
+              platform === "youtube" ? "bg-gray-700 text-white" : "text-gray-400"
+            }`}
+          >
+            YouTube
+          </button>
+        </div>
+      </div>
       <div className="mb-4">
         <input
           type="password"
@@ -193,16 +240,18 @@ const InteractiveForm = () => {
             setLongerTweet(checked);
             setSelectedOptions((prev) => ({
               ...prev,
-              length: checked ? LONG_LENGTH : DEFAULT_LENGTH,
+              length: checked ? longLength : defaultLength,
             }));
           }}
           className="h-4 w-4 text-gray-800 border-gray-300 rounded focus:ring-gray-800"
         />
-        <label htmlFor="longerTweet" className="text-sm text-gray-300">Longer tweets</label>
+        <label htmlFor="longerTweet" className="text-sm text-gray-300">
+          {platform === "twitter" ? "Longer tweets" : "Longer videos"}
+        </label>
       </div>
 
       <div className="grid grid-cols-2 md:grid-cols-3 gap-2 mt-2 mb-6">
-        {tweetCategories.map((category : TweetCategory) => (
+        {categories.map((category : TweetCategory) => (
           <Dropdown
           key={category.key}
           label={category.name}
@@ -221,18 +270,18 @@ const InteractiveForm = () => {
         </div>
       )}
 
-      {tweetIdeas.length > 0 && tweetIdeas.map((tweet,idx) => (
+      {contentIdeas.length > 0 && contentIdeas.map((content, idx) => (
         <div key={idx} >
         <div className="relative border-2 border-gray-900 bg-transparent mt-2 p-2 rounded-lg  h-auto overflow-y-auto">
           <div className="w-full p-2 pr-24 max-w-2xl bg-inherit">
             <div className="w-full flex flex-col justify-center items-center text-wrap text-base text-gray-100">
-              {tweet}
+              {content}
             </div>
           </div>
 
           <Button
             onClick={() => {
-              navigator.clipboard.writeText(tweet);
+              navigator.clipboard.writeText(content);
               toast("Copied to clipboard", {
                 icon: "📋",
                 style: {
@@ -247,7 +296,7 @@ const InteractiveForm = () => {
             <BsCopy size={15} /> Copy
           </Button>
           <Button
-            onClick={() => exportTweet(tweet)}
+            onClick={() => exportTweet(content)}
             className="text-[12px] flex items-center gap-1 bg-gray-800 text-white px-4 py-2 rounded-md hover:bg-gray-700 absolute right-1 bottom-1"
           >
             <RiFileAddLine size={15} /> Send to Sheets
