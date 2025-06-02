@@ -107,25 +107,49 @@ export interface WebhookTweet {
 
 export async function getScheduledTweets(webhookUrl?: string): Promise<ScheduledTweet[]> {
   if (webhookUrl) {
-    const response = await fetch(webhookUrl);
-    if (!response.ok) {
-      throw new Error('Failed to fetch scheduled tweets via webhook');
+    console.log('Attempting to fetch tweets from webhook URL:', webhookUrl);
+    try {
+      const response = await fetch(webhookUrl);
+      console.log('Webhook response status:', response.status);
+      
+      if (!response.ok) {
+        console.error('Webhook response not OK:', {
+          status: response.status,
+          statusText: response.statusText
+        });
+        throw new Error('Failed to fetch scheduled tweets via webhook');
+      }
+      
+      const data = await response.json();
+      console.log('Received data from webhook:', data);
+      
+      if (!Array.isArray(data)) {
+        console.error('Unexpected data format:', data);
+        throw new Error('Unexpected data format from webhook');
+      }
+      
+      console.log('Processing webhook data...');
+      return data.map((item: WebhookTweet) => {
+        const postedValue = item.posted ?? item.Posted ?? false;
+        const posted = typeof postedValue === 'string'
+          ? postedValue.toLowerCase() === 'true'
+          : Boolean(postedValue);
+        const tweet = {
+          content: item.tweet ?? item.content ?? '',
+          date: item.date ?? item.timestamp_incoming_webhook ?? '',
+          posted,
+        } as ScheduledTweet;
+        console.log('Processed tweet:', tweet);
+        return tweet;
+      });
+    } catch (error) {
+      console.error('Error in getScheduledTweets:', {
+        error,
+        message: error instanceof Error ? error.message : 'Unknown error',
+        stack: error instanceof Error ? error.stack : undefined
+      });
+      throw error;
     }
-    const data = await response.json();
-    if (!Array.isArray(data)) {
-      throw new Error('Unexpected data format from webhook');
-    }
-    return data.map((item: WebhookTweet) => {
-      const postedValue = item.posted ?? item.Posted ?? false;
-      const posted = typeof postedValue === 'string'
-        ? postedValue.toLowerCase() === 'true'
-        : Boolean(postedValue);
-      return {
-        content: item.tweet ?? item.content ?? '',
-        date: item.date ?? item.timestamp_incoming_webhook ?? '',
-        posted,
-      } as ScheduledTweet;
-    });
   }
 
   const spreadsheetId = process.env.GOOGLE_SHEETS_SPREADSHEET_ID;
@@ -175,4 +199,3 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
     return { content, date, posted } as ScheduledTweet;
   });
 }
-
