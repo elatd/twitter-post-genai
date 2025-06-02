@@ -38,8 +38,8 @@ const InteractiveForm = () => {
     const loadingToast = toast.loading("Saving tweet...");
     try {
     const payload = {
+      timestamp_incoming_webhook: new Date().toISOString(),
       tweet,
-      date: selectedDate,
       tweet_date: selectedDate,
       webhookUrl,
     };

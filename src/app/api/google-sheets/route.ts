@@ -3,12 +3,20 @@ import { appendTweetToSheet } from "../../lib/googleSheets";
 
 export async function POST(req: Request) {
   const {
+    timestamp_incoming_webhook,
     tweet,
-    date,
     tweet_date,
     webhookUrl: clientWebhookUrl,
   } = await req.json();
-  const finalDate: string | undefined = date || tweet_date;
+
+  if (!timestamp_incoming_webhook || !tweet || !tweet_date) {
+    return NextResponse.json(
+      { message: "timestamp_incoming_webhook, tweet and tweet_date are required" },
+      { status: 400 }
+    );
+  }
+
+  const finalDate: string = tweet_date;
   const webhookUrl = clientWebhookUrl || process.env.GOOGLE_SHEETS_WEBHOOK_URL;
 
   if (!tweet) {
@@ -26,8 +34,8 @@ export async function POST(req: Request) {
         "Content-Type": "application/json",
       },
       body: JSON.stringify({
+        timestamp_incoming_webhook,
         tweet,
-        date: finalDate,
         tweet_date: finalDate,
       }),
     });
@@ -59,7 +67,11 @@ export async function POST(req: Request) {
   }
 
   try {
-    await appendTweetToSheet(tweet, finalDate || "");
+    await appendTweetToSheet(
+      timestamp_incoming_webhook,
+      tweet,
+      finalDate
+    );
     return NextResponse.json({ success: true });
   } catch (error) {
     console.error("Error exporting tweet to Google Sheets:", error);

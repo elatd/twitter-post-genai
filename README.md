@@ -108,13 +108,13 @@ same sheet.
 ## Spreadsheet Layout
 
 ```
-Row 1 (headers): tweet | date | posted
-Rows 2+ : tweet text | YYYY-MM-DD | TRUE/FALSE
+Row 1 (headers): timestamp_incoming_webhook | tweet | tweet_date
+Rows 2+ : auto timestamp | tweet text | YYYY-MM-DD
 ```
 
 The first row must contain these headers because `getScheduledTweets` skips it
-when reading your sheet. Some webhook services send a `timestamp_incoming_webhook`
-field&mdash;map this value to the `date` column.
+when reading your sheet. The timestamp is generated when you click **Send to
+Sheets** so your spreadsheet always records when each tweet was exported.
 
 ## Screenshots
 
