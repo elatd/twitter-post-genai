@@ -20,27 +20,64 @@ const auth = new google.auth.JWT(
 
 const sheets = google.sheets({ version: 'v4', auth });
 
+function columnToLetter(column: number): string {
+  let temp = '';
+  let col = column + 1;
+  while (col > 0) {
+    const remainder = (col - 1) % 26;
+    temp = String.fromCharCode(65 + remainder) + temp;
+    col = Math.floor((col - 1) / 26);
+  }
+  return temp;
+}
+
 async function processSheet() {
   const now = new Date();
   const res = await sheets.spreadsheets.values.get({
     spreadsheetId,
-    range: `${sheetName}!A:C`,
+    range: sheetName,
   });
+
   const rows = res.data.values || [];
+  if (rows.length === 0) return;
+
+  const headers = rows[0];
+  const idxTimestamp = headers.indexOf('timestamp_incoming_webhook');
+  const idxTweet = headers.indexOf('tweet');
+  const idxDate = headers.indexOf('tweet_date');
+  let idxPosted = headers.indexOf('posted');
+
+  if (idxPosted === -1) {
+    idxPosted = headers.length;
+    const headerRange = `${sheetName}!${columnToLetter(idxPosted)}1`;
+    await sheets.spreadsheets.values.update({
+      spreadsheetId,
+      range: headerRange,
+      valueInputOption: 'USER_ENTERED',
+      requestBody: { values: [['posted']] },
+    });
+  }
+
   for (let i = 1; i < rows.length; i++) {
-    const [content, dateStr, posted] = rows[i];
-    // The second column may store either an explicit date or the
-    // webhook-provided timestamp. Use whatever value is present.
-    const resolvedDateStr = dateStr;
-    if (posted && posted.toLowerCase() === 'true') continue;
-    if (!content || !resolvedDateStr) continue;
-    const scheduled = new Date(resolvedDateStr);
+    const row = rows[i];
+    const content = (idxTweet >= 0 ? row[idxTweet] : row[1]) || '';
+    const dateStr =
+      (idxDate >= 0 ? row[idxDate] : undefined) ??
+      (idxTimestamp >= 0 ? row[idxTimestamp] : undefined) ??
+      row[2] ?? '';
+    const posted = row[idxPosted];
+
+    if (posted && typeof posted === 'string' && posted.toLowerCase() === 'true') continue;
+    if (!content || !dateStr) continue;
+    const scheduled = new Date(dateStr);
+    if (isNaN(scheduled.getTime())) continue;
     if (scheduled <= now) {
       try {
         await sendTweet(content);
+        const updateRange = `${sheetName}!${columnToLetter(idxPosted)}${i + 1}`;
         await sheets.spreadsheets.values.update({
           spreadsheetId,
-          range: `${sheetName}!C${i + 1}`,
+          range: updateRange,
           valueInputOption: 'USER_ENTERED',
           requestBody: { values: [['TRUE']] },
         });
