@@ -123,13 +123,19 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
       const data = await response.json();
       console.log('Received data from webhook:', data);
       
-      if (!Array.isArray(data)) {
+      // Handle both direct array and object containing tweets array
+      let tweetsArray: any[];
+      if (Array.isArray(data)) {
+        tweetsArray = data;
+      } else if (data && typeof data === 'object' && Array.isArray(data.tweets)) {
+        tweetsArray = data.tweets;
+      } else {
         console.error('Unexpected data format:', data);
         throw new Error('Unexpected data format from webhook');
       }
       
       console.log('Processing webhook data...');
-      return data.map((item: WebhookTweet) => {
+      return tweetsArray.map((item: WebhookTweet) => {
         const postedValue = item.posted ?? item.Posted ?? false;
         const posted = typeof postedValue === 'string'
           ? postedValue.toLowerCase() === 'true'
