@@ -100,10 +100,10 @@ Run the scheduler using:
 npm run start:scheduler
 ```
 
-The web app now includes a **Scheduled** tab where you can view upcoming tweets
-from your spreadsheet. When you provide a Google Sheets webhook on the Generate
-page, the URL is stored locally so the Scheduled tab can fetch tweets from the
-same sheet.
+The web app now includes a **Scheduled** tab where you can view tweets
+from your spreadsheet. It simply lists everything found in column B.
+When you provide a Google Sheets webhook on the Generate page, the URL is stored
+locally so the Scheduled tab can fetch tweets from the same sheet.
 
 ## Spreadsheet Layout
 

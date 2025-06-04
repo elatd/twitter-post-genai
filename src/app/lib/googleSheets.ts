@@ -125,8 +125,10 @@ export async function getScheduledTweets(webhookUrl?: string): Promise<Scheduled
 
   const rows = res.data.values || [];
   return rows.slice(1).map((row) => ({
-    content: row[0] || '',
-    date: row[1] || '',
+    // Use column B as the tweet text so the Scheduled tab
+    // simply lists everything in that column.
+    content: row[1] || '',
+    date: row[0] || '',
     posted: (row[2] || '').toLowerCase() === 'true',
   }));
 }

@@ -1,6 +1,8 @@
 "use client";
 import { useEffect, useState } from "react";
 
+// Represents a single row from the sheet. `content` holds the value from
+// column B which contains the tweet text.
 interface ScheduledTweet {
   content: string;
   date: string;
@@ -47,18 +49,14 @@ const ScheduledTweets = () => {
   }
 
   return (
-    <div className="w-full max-w-2xl flex flex-col gap-2">
-      {tweets.map((tweet, idx) => (
-        <div
-          key={idx}
-          className="border-2 border-gray-900 bg-transparent p-2 rounded-lg"
-        >
-          <p className="text-gray-100 whitespace-pre-wrap">{tweet.content}</p>
-          <p className="text-gray-400 text-sm mt-1">
-            Date: {tweet.date} {tweet.posted ? "(posted)" : ""}
-          </p>
-        </div>
-      ))}
+    <div className="w-full max-w-2xl">
+      <ul className="list-disc list-inside space-y-1">
+        {tweets.map((tweet, idx) => (
+          <li key={idx} className="text-gray-100 whitespace-pre-wrap">
+            {tweet.content}
+          </li>
+        ))}
+      </ul>
     </div>
   );
 };
